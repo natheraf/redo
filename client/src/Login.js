@@ -1,59 +1,58 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// TEMP - this will be replaced with a call to the server
-const usersDataUrl = '/users.json';
 
 export const Login = () => {
-    // currently reading from a local file to simulate, this will not make it to production
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loginStatus, setLoginStatus] = useState('');
 
-    const handleLogin = async () => {
+    const navigate = useNavigate();
+
+    const handleLogin = () => {
         try {
-            const response = await fetch(usersDataUrl);
-            const users = await response.json();
-            const user = users.find(user => user.username === username && user.password === password);
-            if (user) {
+            const storedUsers = localStorage.getItem('users');
+            const users = JSON.parse(storedUsers); 
+            const userExists = users.some(user => user.username === username && user.password === password);
+    
+            if (userExists) {
                 setLoginStatus('Login Successful');
-                // TODO: redirect the user or change the state as needed upon successful login
+                // redirect to home page using react-router-dom
+                navigate('/home');
             } else {
                 setLoginStatus('Invalid username or password');
             }
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            console.error('Error during login:', error);
             setLoginStatus('An error occurred. Please try again later.');
         }
     };
 
-    const toggleShowPassword = () => {
-        setShowPassword(!showPassword);
-    };
+    const toggleShowPassword = () => setShowPassword(!showPassword);
 
     return (
         <div className="Login" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
             <h1 style={{ textAlign: 'center' }}>Login</h1>
-            <input 
-                type="text" 
-                placeholder="Username" 
-                value={username} 
-                onChange={e => setUsername(e.target.value)} 
+            <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
                 style={{ marginBottom: '10px' }}
             />
-            <input 
+            <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password" 
-                value={password} 
-                onChange={e => setPassword(e.target.value)} 
+                placeholder="Password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 style={{ marginBottom: '10px' }}
             />
             <button onClick={toggleShowPassword} style={{ marginBottom: '10px' }}>
                 {showPassword ? 'Hide Password' : 'Show Password'}
             </button>
             <button onClick={handleLogin}>Login</button>
-            
             <div>{loginStatus}</div>
         </div>
     );
-}
+};
