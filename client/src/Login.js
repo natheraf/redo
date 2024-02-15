@@ -30,11 +30,17 @@ export const Login = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        try {
+        // Retrieve users from localStorage
+        const users = JSON.parse(localStorage.getItem('testUserData')) || [];
+        // Check if user exists and password matches
+        const userExists = users.find(user => user.username === username && user.password === password);
+    
+        if (userExists) {
+            // User found and password matches
             navigate('/home'); // Redirect on successful login
-        } catch (error) {
-            console.error('Login error:', error);
-            setLoginStatus('An error occurred. Please try again later.');
+        } else {
+            // User not found or password does not match
+            setLoginStatus('Invalid username or password. Please try again.');
         }
     };
 
@@ -122,6 +128,15 @@ export const Login = () => {
                             onClick={() => navigate('/')} // Use navigate to go back to the landing page
                         >
                             Go Back
+                        </Button>
+                        <Button
+                            // button component to navigate to the register page
+                            fullWidth
+                            variant="text"
+                            sx={{ mt: 1, mb: 2 }}
+                            onClick={() => navigate('/register')} // Use navigate to go to the register page
+                        >
+                            Register
                         </Button>
                     </Box>
                 </Box>
