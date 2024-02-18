@@ -14,6 +14,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {useAuth} from './AuthContext.js';
 
 const theme = createTheme();
 
@@ -23,6 +24,7 @@ export const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [loginStatus, setLoginStatus] = useState('');
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const toggleShowPassword = () => {
         setShowPassword(!showPassword);
@@ -37,7 +39,8 @@ export const Login = () => {
     
         if (userExists) {
             // User found and password matches
-            navigate('/home'); // Redirect on successful login
+            login(); // Set the user as logged in
+            navigate('/home'); // Redirect to the home page
         } else {
             // User not found or password does not match
             setLoginStatus('Invalid username or password. Please try again.');

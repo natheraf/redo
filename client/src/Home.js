@@ -6,7 +6,7 @@ import React from 'react';
 
 export const Home = () => {
     return (
-        <div className="Home">
+        <div className="Home" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh', marginTop: '-20vh' }}>
             <header className="Home-header">
                 <h1>Welcome to the Home Page</h1>
                 <p>
