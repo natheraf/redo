@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
 import {Landing} from './Landing';
 import {Login} from './Login';
-import {Home} from './Home';
+import Home from './Home';
 import Register from './Register';
 import ProtectedRoute from './ProtectedRoute';
 
