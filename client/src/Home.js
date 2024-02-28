@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
+import { Stack } from '@mui/material';
 
 const Home = () => {
     const { logout } = useAuth(); // Destructure logout from useAuth
@@ -62,6 +63,19 @@ const Home = () => {
                 />
                 <button onClick={createReminder}>Create</button>
             </div>
+
+            <Stack direction={"row"} spacing={3} sx={{ minWidth: '50vw' }} justifyContent={"center"} alignItems={"center"}>
+
+                <div style={{ border: '2px solid red', height: '400px', minWidth: '15vw' }}>
+                    <h2 style={{ textAlign: 'center' }}> TEST </h2>
+                </div>
+
+                <div style={{ border: '2px solid red', height: '400px', minWidth: '15vw' }}>
+                    <h2 style={{ textAlign: 'center' }}> TEST </h2>
+                </div>
+
+            </Stack>
+
             {renderPopup()}
             <div>
                 {/* test code */}
