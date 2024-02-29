@@ -1,93 +1,101 @@
-import React, { useState } from 'react';
-import { useAuth } from './AuthContext';
-import { Stack } from '@mui/material';
+import * as React from 'react';
+import { useState } from 'react';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Unstable_Grid2';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import { useAuth } from './AuthContext'; 
 
-const Home = () => {
-    const { logout } = useAuth(); // Destructure logout from useAuth
+
+//TODO - make it so after you can discard the reminder and it will be removed from the list and put into a discarded list
+//which itself can be discarded or restored to the main list or deleted after x time
+//TODO - make it so you can edit the reminder
+//TODO - make it so you can set a time/date for the reminder
+//TODO - make it so you can make the reminder repeat
+
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+}));
+
+export default function NestedGrid() {
     const [reminders, setReminders] = useState([]);
     const [newReminder, setNewReminder] = useState('');
-    const [showPopup, setShowPopup] = useState(false);
+    const { logout } = useAuth();
 
-    const handleNewReminderChange = (event) => {
-        setNewReminder(event.target.value);
-    };
+  const handleAddReminder = () => {
+    if (newReminder.trim() !== '') {
+      setReminders([...reminders, newReminder]);
+      setNewReminder('');
+    }
+  };
 
-    const createReminder = () => {
-        setShowPopup(true);
-    };
-    const handleLogout = () => {
-        logout(); // This will clear the user token and update isLoggedIn state
-    };
-
-    // TODO: store the reminder in localStorage so it persists on page refresh
-    const handleReminderCreation = (date, repeat) => {
-        const updatedReminders = [...reminders, { content: newReminder, date, repeat }];
-        setReminders(updatedReminders);
-        setShowPopup(false);
-        setNewReminder('');
-    };
-
-    const handleDateInput = (value) => {
-        // TODO: Handle date input logic here
-    };
-
-    const completeReminder = (index) => {
-        const updatedReminders = reminders.filter((_, i) => i !== index);
-        setReminders(updatedReminders);
-    };
-
-    const renderPopup = () => {
-        if (!showPopup) return null;
-
-        // For now just a placeholder function is used to handle the date input
-        // (does not actually store the date in the state)
-        return (
-            <div className="popup">
-                <input type="datetime-local" onChange={(event) => handleDateInput(event.target.value)} />
-                <button onClick={() => handleReminderCreation(new Date(), false)}>Set Timer/Date</button>
-                <button onClick={() => handleReminderCreation(null, true)}>Set Repeat</button>
-            </div>
-        );
-    };
-
-    return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div>Welcome, {"TEST"}!</div>
-            <button onClick={handleLogout}>Logout</button>
-            <div style={{ marginTop: '2.5%' }}>
-                <input
-                    type="text"
-                    value={newReminder}
-                    onChange={handleNewReminderChange}
-                    placeholder="Set a reminder here"
-                />
-                <button onClick={createReminder}>Create</button>
-            </div>
-
-            <Stack direction={"row"} spacing={3} sx={{ minWidth: '50vw' }} justifyContent={"center"} alignItems={"center"}>
-
-                <div style={{ border: '2px solid red', height: '400px', minWidth: '15vw' }}>
-                    <h2 style={{ textAlign: 'center' }}> TEST </h2>
-                </div>
-
-                <div style={{ border: '2px solid red', height: '400px', minWidth: '15vw' }}>
-                    <h2 style={{ textAlign: 'center' }}> TEST </h2>
-                </div>
-
-            </Stack>
-
-            {renderPopup()}
-            <div>
-                {/* test code */}
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+        
+      <Grid container spacing={2}>
+        {/*New reminders element*/}
+        <Grid xs={12} md={5} lg={4}>
+          <Item>
+            <TextField
+              fullWidth
+              label="New Reminder"
+              value={newReminder}
+              onChange={(e) => setNewReminder(e.target.value)}
+              variant="outlined"
+              margin="normal"
+            />
+            <Button variant="contained" onClick={handleAddReminder}>
+              Add Reminder
+            </Button>
+          </Item>
+        </Grid>
+        {/*Reminders list*/}
+        <Grid container xs={12} md={7} lg={8} spacing={4}>
+          <Grid xs={6} lg={3}>
+            <Item>
+              <Box
+                id="box1"
+                sx={{ fontSize: '12px', textTransform: 'uppercase' }}
+              >
+                Reminderssssss
+              </Box>
+              <Box component="ul" aria-labelledby="box1" sx={{ pl: 2 }}>
                 {reminders.map((reminder, index) => (
-                    <div key={index}>
-                        <input type="checkbox" onChange={() => completeReminder(index)} />
-                        <span>{reminder.content}</span>
-                    </div>
+                  <li key={index}>{reminder}</li>
                 ))}
-            </div>
-        </div>
-    );
-};
-
-export default Home;
+              </Box>
+            </Item>
+          </Grid>
+          {/* Placeholder Box B, C, D with "Test" */}
+          <Grid xs={6} lg={3}><Item>Test</Item></Grid>
+          <Grid xs={6} lg={3}><Item>Test</Item></Grid>
+          <Grid xs={6} lg={3}><Item>Test</Item></Grid>
+        </Grid>
+        <Grid
+          xs={12}
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          flexDirection={{ xs: 'column', sm: 'row' }}
+          sx={{ fontSize: '12px' }}
+        >
+          <Grid sx={{ order: { xs: 2, sm: 1 } }}>
+            <Item>Test page</Item>
+          </Grid>
+          <Grid container columnSpacing={1} sx={{ order: { xs: 1, sm: 2 } }}>
+            <Button variant='contained' onClick={logout}>
+                Log out
+            </Button>
+            {/* Removed Link B and C */}
+          </Grid>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+}
