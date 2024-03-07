@@ -10,6 +10,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from '@mui/icons-material/Edit'; // Import the edit icon
+import DoneIcon from '@mui/icons-material/Done'; // Import the done icon
 import { useAuth } from "./AuthContext";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -89,7 +90,6 @@ export default function NestedGrid() {
                 </Grid>
                 {/* Reminders list and Discarded reminders side by side */}
                 <Grid container xs={12} md={7} lg={8} spacing={2}>
-                    {/* Active reminders */}
                     <Grid xs={12} md={6}>
                         <Item>
                             <Box
@@ -102,13 +102,20 @@ export default function NestedGrid() {
                                 {reminders.map((reminder, index) => (
                                     <li key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                                         {editIndex === index ? (
-                                            <TextField
-                                                fullWidth
-                                                variant="standard"
-                                                value={editText}
-                                                onChange={handleEditChange}
-                                                onBlur={() => handleSaveEdit(index)}
-                                            />
+                                            <React.Fragment>
+                                                <TextField
+                                                    fullWidth
+                                                    variant="standard"
+                                                    value={editText}
+                                                    onChange={handleEditChange}
+                                                    onBlur={() => handleSaveEdit(index)}
+                                                />
+                                                <Tooltip title="Done">
+                                                    <IconButton onClick={() => handleSaveEdit(index)}>
+                                                        <DoneIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </React.Fragment>
                                         ) : (
                                             <React.Fragment>
                                                 <FormControlLabel
