@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -8,6 +7,9 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from '@mui/icons-material/Edit'; // Import the edit icon
 import { useAuth } from "./AuthContext";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -19,13 +21,11 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function NestedGrid() {
-    const [reminders, setReminders] = useState(
-        JSON.parse(localStorage.getItem("reminders")) || [],
-    );
-    const [discarded, setDiscarded] = useState(
-        JSON.parse(localStorage.getItem("discarded")) || [],
-    );
-    const [newReminder, setNewReminder] = useState("");
+    const [reminders, setReminders] = useState(JSON.parse(localStorage.getItem("reminders")) || []);
+    const [discarded, setDiscarded] = useState(JSON.parse(localStorage.getItem("discarded")) || []);
+    const [newReminder, setNewReminder] = useState(""); // Correctly define newReminder state here
+    const [editIndex, setEditIndex] = useState(-1); // New state to track edit mode
+    const [editText, setEditText] = useState(""); // New state for the text being edited
     const { logout } = useAuth();
 
     useEffect(() => {
@@ -35,20 +35,37 @@ export default function NestedGrid() {
 
     const handleAddReminder = () => {
         if (newReminder.trim() !== "") {
-            setReminders([...reminders, newReminder]);
-            setNewReminder("");
+            setReminders([...reminders, { text: newReminder, isEditing: false }]);
+            setNewReminder(""); // Clear the input field after adding a reminder
         }
     };
 
     const handleDiscardReminder = (index) => {
         const newReminders = reminders.filter((_, i) => i !== index);
         setReminders(newReminders);
-        setDiscarded([...discarded, reminders[index]]);
+        setDiscarded([...discarded, reminders[index].text]); // Ensure to use .text to discard the correct reminder format
     };
 
     const handleRemovePermanently = (index) => {
         const newDiscarded = discarded.filter((_, i) => i !== index);
         setDiscarded(newDiscarded);
+    };
+
+    const handleStartEditing = (index) => {
+        setEditIndex(index);
+        setEditText(reminders[index].text); // Prepare editText with the current reminder's text
+    };
+
+    const handleEditChange = (event) => {
+        setEditText(event.target.value); // Update editText as the user types
+    };
+
+    const handleSaveEdit = (index) => {
+        const updatedReminders = reminders.map((reminder, i) =>
+            i === index ? { ...reminder, text: editText } : reminder // Save the edited text
+        );
+        setReminders(updatedReminders);
+        setEditIndex(-1); // Exit edit mode
     };
 
     return (
@@ -61,7 +78,7 @@ export default function NestedGrid() {
                             fullWidth
                             label="New Reminder"
                             value={newReminder}
-                            onChange={(e) => setNewReminder(e.target.value)}
+                            onChange={(e) => setNewReminder(e.target.value)} // Update newReminder as the user types
                             variant="outlined"
                             margin="normal"
                         />
@@ -81,17 +98,31 @@ export default function NestedGrid() {
                             >
                                 Reminders
                             </Box>
-                            <Box component="ul" aria-labelledby="box1" sx={{ pl: 2 }}>
+                            <Box component="ul" aria-labelledby="box1" sx={{ pl: 2, listStyle: 'none', padding: 0 }}>
                                 {reminders.map((reminder, index) => (
-                                    <li key={index}>
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    onChange={() => handleDiscardReminder(index)}
+                                    <li key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                                        {editIndex === index ? (
+                                            <TextField
+                                                fullWidth
+                                                variant="standard"
+                                                value={editText}
+                                                onChange={handleEditChange}
+                                                onBlur={() => handleSaveEdit(index)}
+                                            />
+                                        ) : (
+                                            <React.Fragment>
+                                                <FormControlLabel
+                                                    control={<Checkbox onChange={() => handleDiscardReminder(index)} />}
+                                                    label={reminder.text}
+                                                    sx={{ flexGrow: 1 }}
                                                 />
-                                            }
-                                            label={reminder}
-                                        />
+                                                <Tooltip title="Edit">
+                                                    <IconButton onClick={() => handleStartEditing(index)}>
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </React.Fragment>
+                                        )}
                                     </li>
                                 ))}
                             </Box>
@@ -106,17 +137,15 @@ export default function NestedGrid() {
                             >
                                 Discarded Reminders
                             </Box>
-                            <Box component="ul" aria-labelledby="box2" sx={{ pl: 2 }}>
+                            <Box component="ul" aria-labelledby="box2" sx={{ pl: 2, listStyle: 'none' }}> {/* Remove bullet points */}
                                 {discarded.map((reminder, index) => (
                                     <li key={index}>
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    onChange={() => handleRemovePermanently(index)}
-                                                />
-                                            }
-                                            label={reminder}
-                                        />
+                                        <Tooltip title="Permanently Remove" placement="top"> {/* Tooltip adjusted */}
+                                            <FormControlLabel
+                                                control={<Checkbox onChange={() => handleRemovePermanently(index)} />}
+                                                label={reminder}
+                                            />
+                                        </Tooltip>
                                     </li>
                                 ))}
                             </Box>
@@ -131,11 +160,9 @@ export default function NestedGrid() {
                     flexDirection={{ xs: "column", sm: "row" }}
                     sx={{ fontSize: "12px" }}
                 >
-                    <Grid container columnSpacing={1} sx={{ order: { xs: 1, sm: 2 } }}>
-                        <Button variant="contained" onClick={logout}>
-                            Log out
-                        </Button>
-                    </Grid>
+                    <Button variant="contained" onClick={logout}>
+                        Log out
+                    </Button>
                 </Grid>
             </Grid>
         </Box>
