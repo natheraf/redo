@@ -9,8 +9,8 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
-import EditIcon from '@mui/icons-material/Edit'; // Import the edit icon
-import DoneIcon from '@mui/icons-material/Done'; // Import the done icon
+import EditIcon from '@mui/icons-material/Edit';
+import DoneIcon from '@mui/icons-material/Done'; 
 import { useAuth } from "./AuthContext";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -144,7 +144,7 @@ export default function NestedGrid() {
                             >
                                 Discarded Reminders
                             </Box>
-                            <Box component="ul" aria-labelledby="box2" sx={{ pl: 2, listStyle: 'none' }}> {/* Remove bullet points */}
+                            <Box component="ul" aria-labelledby="box2" sx={{ pl: 2, listStyle: 'none' }}>
                                 {discarded.map((reminder, index) => (
                                     <li key={index}>
                                         <Tooltip title="Permanently Remove" placement="top"> {/* Tooltip adjusted */}
