@@ -24,7 +24,7 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function NestedGrid() {
     const [reminders, setReminders] = useState(JSON.parse(localStorage.getItem("reminders")) || []);
     const [discarded, setDiscarded] = useState(JSON.parse(localStorage.getItem("discarded")) || []);
-    const [newReminder, setNewReminder] = useState(""); // Correctly define newReminder state here
+    const [newReminder, setNewReminder] = useState(""); 
     const [editIndex, setEditIndex] = useState(-1); // New state to track edit mode
     const [editText, setEditText] = useState(""); // New state for the text being edited
     const { logout } = useAuth();
@@ -54,7 +54,7 @@ export default function NestedGrid() {
 
     const handleStartEditing = (index) => {
         setEditIndex(index);
-        setEditText(reminders[index].text); // Prepare editText with the current reminder's text
+        setEditText(reminders[index].text);
     };
 
     const handleEditChange = (event) => {
@@ -142,7 +142,7 @@ export default function NestedGrid() {
                                 id="box2"
                                 sx={{ fontSize: "12px", textTransform: "uppercase" }}
                             >
-                                Discarded Reminders
+                                Discarded/Done Reminders
                             </Box>
                             <Box component="ul" aria-labelledby="box2" sx={{ pl: 2, listStyle: 'none' }}>
                                 {discarded.map((reminder, index) => (
