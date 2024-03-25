@@ -1,0 +1,16 @@
+In the terminal, type the following to start local postgres server: (not to self)
+```
+brew services start postgresql@16
+```
+After starting the server, you can connect to the database using the following command:
+```
+psql postgres
+```
+Then you can use pgAdmin to connect to the database, and view the tables and data.
+
+To stop the server, type the following in the terminal:
+```
+brew services stop postgresql@16
+```
+
+NOTE: If you are using a different version of postgres, replace `16` with your version number.
