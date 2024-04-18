@@ -69,6 +69,29 @@ app.get("*", (_, res) => {
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => console.log(`Express Server on port ${port}`));
+async function createTestUser() {
+    const username = "test";
+    const email = "test@email.com";
+    const password = "testPassword123"; // Consider storing passwords securely or generating dynamically
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    try {
+        // Check if user already exists to avoid duplicates
+        const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        if (existingUser.rows.length === 0) {
+            await pool.query('INSERT INTO users (id, username, email, password_hash) VALUES ($1, $2, $3, $4)',
+                [69, username, email, hashedPassword]);
+            console.log('Test user created successfully!');
+        } else {
+            console.log('Test user already exists.');
+        }
+    } catch (error) {
+        console.error('Failed to create test user:', error);
+    }
+}
+
+createTestUser().then(() => {
+    app.listen(port, () => console.log(`Express Server on port ${port}`));
+});
 
 module.exports = app; // Export for testing

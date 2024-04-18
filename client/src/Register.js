@@ -130,7 +130,7 @@ export default function SignUp() {
     );
 }
 
-// WARNING: This is for testing purposes only. This is not a secure way to store user data. 
+// TODO: make a call to the server to register a user now that postgreSQL is set up 
 function registerUser(username, password) {
     // Placeholder for checking username uniqueness and storing new user
     const users = JSON.parse(localStorage.getItem('testUserData')) || [];
