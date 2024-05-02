@@ -18,6 +18,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
 const defaultTheme = createTheme();
+const email = "test_email@mailz.com"; // Test email
 
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +35,7 @@ export default function SignUp() {
             return;
         }
 
-        if (registerUser(username, password)) {
+        if (registerUser(username, email, password)) {
             navigate('/login');
         } else {
             alert('Username is already taken.');
@@ -130,17 +131,33 @@ export default function SignUp() {
     );
 }
 
-// TODO: make a call to the server to register a user now that postgreSQL is set up 
-function registerUser(username, password) {
-    // Placeholder for checking username uniqueness and storing new user
-    const users = JSON.parse(localStorage.getItem('testUserData')) || [];
-    const userExists = users.some(user => user.username === username);
+// TODO: make a call to the server to register a user now that postgreSQL is set up. The password should also be
+// hashed using JWT before being sent to the server. The server should then store the hashed password in the database.
+async function registerUser(username, email, password){
 
-    if (!userExists) {
-        users.push({ username, password });
-        localStorage.setItem('testUserData', JSON.stringify(users));
+    try {
+        const response = await fetch('/http://localhost:8080/register', 
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username,
+                email,
+                password
+            })
+        });
+
+        if (!response.ok){
+            const errorData = await response.json();
+            throw new Error(errorData.error || "unable to register user.")
+        }
         return true;
-    } else {
+    } catch (error) {
+        console.error('Registration error:', error);
+        alert('Error registering new user: ' + error.message);
         return false;
     }
+    
 }
