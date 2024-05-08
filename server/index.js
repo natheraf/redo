@@ -13,15 +13,6 @@ app.use(express.json());
 
 // API Endpoints
 
-// Test to see if the DB is connected/working with a simple query that puts "Hello World" in the console
-app.get('/test', async (req, res) => {
-    try {
-        const test = await pool.query('SELECT $1::text as message', ['Hello World']);
-        res.json(test.rows[0]);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
 
 // User registration
 app.post('/register', async (req, res) => {
@@ -59,6 +50,17 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// Delete user
+app.delete('/users/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deleteUser = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
+        res.json(deleteUser.rows[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Serve React App
 app.use(express.static(path.join(__dirname, "../client/build")));
 
@@ -86,7 +88,7 @@ async function createTestUser() {
             console.log('Test user already exists.');
         }
     } catch (error) {
-        console.error('Failed to create test user:', error);
+        console.error('Failed to create test user:', error); // fall back to see if db is connected
     }
 }
 
