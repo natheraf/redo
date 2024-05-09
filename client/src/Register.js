@@ -20,6 +20,37 @@ import { useNavigate } from 'react-router-dom';
 const defaultTheme = createTheme();
 const email = "test_email@mailz.com"; // Test email
 
+// TODO: make a call to the server to register a user now that postgreSQL is set up. The password should also be
+// hashed using JWT before being sent to the server. The server should then store the hashed password in the database.
+async function registerUser(username, email, password){
+
+    try {
+        const response = await fetch('/http://localhost:8080/register', 
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username,
+                email,
+                password
+            })
+        });
+
+        if (!response.ok){
+            const errorData = await response.json();
+            throw new Error(errorData.error || "unable to register user.")
+        }
+        return true;
+    } catch (error) {
+        console.error('Registration error:', error);
+        alert('Error registering new user: ' + error.message);
+        return false;
+    }
+    
+}
+
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
@@ -131,33 +162,4 @@ export default function SignUp() {
     );
 }
 
-// TODO: make a call to the server to register a user now that postgreSQL is set up. The password should also be
-// hashed using JWT before being sent to the server. The server should then store the hashed password in the database.
-async function registerUser(username, email, password){
 
-    try {
-        const response = await fetch('/http://localhost:8080/register', 
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username,
-                email,
-                password
-            })
-        });
-
-        if (!response.ok){
-            const errorData = await response.json();
-            throw new Error(errorData.error || "unable to register user.")
-        }
-        return true;
-    } catch (error) {
-        console.error('Registration error:', error);
-        alert('Error registering new user: ' + error.message);
-        return false;
-    }
-    
-}
